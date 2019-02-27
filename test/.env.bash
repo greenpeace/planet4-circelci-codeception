@@ -5,7 +5,7 @@ set -a
 VERSION_REGEX="v?[[:digit:]]+\\.[[:digit:]]+"
 
 [ -z "${BUILD_IMAGE:-}" ] && BUILD_IMAGE=gcr.io/planet-4-151612/p4-codeception
-[ -z "${BUILD_TAG:-}" ] && BUILD_TAG=build-$(uname -n | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9._-]/-/g')
+[ -z "${BUILD_TAG:-}" ] && BUILD_TAG=build-${CIRCLE_BUILD_NUM:-$(uname -n | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9._-]/-/g')}
 
 BATS_IMAGE="${BUILD_IMAGE}:${BUILD_TAG}"
 
