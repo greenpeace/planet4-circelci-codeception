@@ -1,0 +1,9 @@
+# hadolint ignore=DL3007
+FROM ${BASE_IMAGE}
+
+LABEL authors="${AUTHOR}"
+
+RUN composer global require codeception/codeception && \
+    composer clear-cache
+
+ENV PATH="/home/circleci/.composer/vendor/bin:${PATH}"
