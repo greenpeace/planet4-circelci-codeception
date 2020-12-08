@@ -7,7 +7,7 @@ GOOGLE_PROJECT_ID ?= planet-4-151612
 BUILD_IMAGE := $(BUILD_NAMESPACE)/$(GOOGLE_PROJECT_ID)/$(IMAGE_NAME)
 export BUILD_IMAGE
 
-BASE_IMAGE_NAME 		?= gcr.io/planet-4-151612/circleci-base
+BASE_IMAGE_NAME 	?= greenpeaceinternational/circleci-base
 BASE_IMAGE_VERSION 	?= latest
 
 BASE_IMAGE := $(BASE_IMAGE_NAME):$(BASE_IMAGE_VERSION)
@@ -88,6 +88,7 @@ endif
 	@circleci config validate >/dev/null
 
 pull:
+	docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
 	docker pull $(BASE_IMAGE)
 
 Dockerfile:
