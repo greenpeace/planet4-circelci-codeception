@@ -3,7 +3,7 @@ FROM ${BASE_IMAGE}
 
 LABEL authors="${AUTHOR}"
 
-RUN composer global require codeception/codeception && \
+RUN composer global require codeception/codeception:2.5.4 && \
     composer clear-cache
 
 COPY codeception-skeleton /home/circleci/scripts/codeception-skeleton
