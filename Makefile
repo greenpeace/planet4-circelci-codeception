@@ -90,6 +90,7 @@ endif
 pull:
 	docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
 	docker pull $(BASE_IMAGE)
+	rm -f /home/circleci/.docker/config.json
 
 Dockerfile:
 	envsubst '$${BASE_IMAGE},$${AUTHOR}' < Dockerfile.in > $@
