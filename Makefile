@@ -67,7 +67,7 @@ init:
 clean:
 	rm -f Dockerfile
 
-lint: lint-yaml lint-docker lint-ci
+lint: lint-yaml lint-docker
 
 lint-yaml:
 ifndef YAMLLINT
@@ -80,12 +80,6 @@ ifndef DOCKER
 $(error "docker is not installed: https://docs.docker.com/install/")
 endif
 	@docker run --rm -i hadolint/hadolint < Dockerfile >/dev/null
-
-lint-ci:
-ifndef CIRCLECI
-$(error "circleci is not installed: https://circleci.com/docs/2.0/local-cli/#installation")
-endif
-	@circleci config validate >/dev/null
 
 pull:
 	docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}

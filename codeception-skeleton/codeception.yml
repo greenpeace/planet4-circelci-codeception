@@ -1,3 +1,4 @@
+---
 paths:
     tests: .
     output: codeception/_output
