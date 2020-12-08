@@ -57,7 +57,7 @@ YAMLLINT := $(shell command -v yamllint 2> /dev/null)
 
 # ============================================================================
 
-all: init clean build test push
+all: init clean build push
 
 init:
 	@chmod 755 .githooks/*
