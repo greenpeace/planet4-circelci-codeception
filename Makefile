@@ -7,7 +7,7 @@ GOOGLE_PROJECT_ID ?= planet-4-151612
 BUILD_IMAGE := $(BUILD_NAMESPACE)/$(GOOGLE_PROJECT_ID)/$(IMAGE_NAME)
 export BUILD_IMAGE
 
-BASE_IMAGE_NAME 		?= gcr.io/planet-4-151612/circleci-base
+BASE_IMAGE_NAME 	?= greenpeaceinternational/circleci-base
 BASE_IMAGE_VERSION 	?= latest
 
 BASE_IMAGE := $(BASE_IMAGE_NAME):$(BASE_IMAGE_VERSION)
@@ -57,7 +57,7 @@ YAMLLINT := $(shell command -v yamllint 2> /dev/null)
 
 # ============================================================================
 
-all: init clean build test push
+all: init clean build push
 
 init:
 	@chmod 755 .githooks/*
@@ -67,7 +67,7 @@ init:
 clean:
 	rm -f Dockerfile
 
-lint: lint-yaml lint-docker lint-ci
+lint: lint-yaml lint-docker
 
 lint-yaml:
 ifndef YAMLLINT
@@ -81,14 +81,10 @@ $(error "docker is not installed: https://docs.docker.com/install/")
 endif
 	@docker run --rm -i hadolint/hadolint < Dockerfile >/dev/null
 
-lint-ci:
-ifndef CIRCLECI
-$(error "circleci is not installed: https://circleci.com/docs/2.0/local-cli/#installation")
-endif
-	@circleci config validate >/dev/null
-
 pull:
+	docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
 	docker pull $(BASE_IMAGE)
+	rm -f /home/circleci/.docker/config.json
 
 Dockerfile:
 	envsubst '$${BASE_IMAGE},$${AUTHOR}' < Dockerfile.in > $@

@@ -1,12 +1,19 @@
 ---
+version: 2.1
+
+docker_auth: &docker_auth
+  username: $DOCKERHUB_USERNAME
+  password: $DOCKERHUB_PASSWORD
+
 defaults: &defaults
   environment:
     GOOGLE_PROJECT_ID: planet-4-151612
   docker:
-    - image: gcr.io/planet-4-151612/circleci-base:latest
+    - image: greenpeaceinternational/circleci-base:latest
+      auth:
+        <<: *docker_auth
   working_directory: /home/circleci/app
 
-version: 2
 
 jobs:
   build-push:
@@ -15,7 +22,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - run: make clean build test
+      - run: make clean build
       - run: activate-gcloud-account.sh
       - run: gcloud auth configure-docker
       - run: |

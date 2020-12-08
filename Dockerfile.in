@@ -6,4 +6,7 @@ LABEL authors="${AUTHOR}"
 RUN composer global require codeception/codeception && \
     composer clear-cache
 
+COPY codeception-skeleton /home/circleci/scripts/codeception-skeleton
+COPY codeceptionify.sh /home/circleci/scripts/codeceptionify.sh
+
 ENV PATH="/home/circleci/.composer/vendor/bin:${PATH}"
