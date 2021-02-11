@@ -6,8 +6,6 @@ docker_auth: &docker_auth
   password: $DOCKERHUB_PASSWORD
 
 defaults: &defaults
-  environment:
-    GOOGLE_PROJECT_ID: planet-4-151612
   docker:
     - image: greenpeaceinternational/circleci-base:latest
       auth:
@@ -16,32 +14,40 @@ defaults: &defaults
 
 
 jobs:
-  build-push:
+  build:
     <<: *defaults
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
-      - run: make clean build
-      - run: activate-gcloud-account.sh
-      - run: gcloud auth configure-docker
-      - run: |
-          mkdir -p /tmp/workspace/var
-          echo "${CIRCLE_BUILD_NUM}" > /tmp/workspace/var/circle-build-num
-      - run: make -j2 push
       - run:
-          name: Notify failure
-          when: on_fail
-          command: TYPE="Build" notify-job-failure.sh
+          name: Configure
+          command: |
+            mkdir -p /tmp/workspace/var
+            echo "${CIRCLE_BUILD_NUM}" > /tmp/workspace/var/circle-build-num
+      - run:
+          name: prepare Dockerfiles
+          command: make prepare
+      - run:
+          name: lint
+          command: make lint
+      - run:
+          name: build
+          command: make build
+      - run:
+          name: test
+          command: make -k test
+      - run:
+          name: push
+          command: make -j push push-latest
+      - store_test_results:
+          path: /home/circleci/app/test/logs/
+      - store_artifacts:
+          path: /home/circleci/app/test/logs/
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - var
-
-  notify-promote:
-    <<: *defaults
-    steps:
-      - run: TYPE="@rawalker Promotion" notify-job-hold.sh
 
   promote:
     <<: *defaults
@@ -49,58 +55,46 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - checkout
-      - run:
-          name: Release
-          command: |
-            current_version=$(git-current-tag.sh)
-            new_version=$(increment-version.sh $current_version)
-            echo "Promoting branch ${CIRCLE_BRANCH} to ${new_version}"
-
-            release-start.sh $new_version
-            release-finish.sh $new_version
       - setup_remote_docker:
           docker_layer_caching: true
       - run:
-          name: Commit
+          name: prepare git
           command: |
-            git checkout ${CIRCLE_BRANCH}
-            make clean build
-            update-build-numbers.sh -f src/Dockerfile
+            git config user.email "circleci-bot@greenpeace.org"
+            git config user.name "CircleCI Bot"
+            git config merge.ours.driver true
+      - run:
+          name: tag
+          command: |
+            current_version=$(git-current-tag.sh)
+            new_version=$(increment-version.sh $current_version)
+            echo "Tagging to ${new_version}"
+            git tag -a "$new_version" -m "$new_version"
+            git push origin --tags
 
 workflows:
-  version: 2
   branch:
     jobs:
-      - build-push:
+      - build:
           context: org-global
-          filters:
-            branches:
-              ignore: master
       - hold-promote:
           type: approval
           requires:
-            - build-push
+            - build
           filters:
             branches:
-              only: develop
-      - notify-promote:
-          context: org-global
-          requires:
-            - build-push
-          filters:
-            branches:
-              only: develop
+              only: main
       - promote:
           context: org-global
           requires:
             - hold-promote
           filters:
             branches:
-              only: develop
+              only: main
 
   tag:
     jobs:
-      - build-push:
+      - build:
           context: org-global
           filters:
             branches:

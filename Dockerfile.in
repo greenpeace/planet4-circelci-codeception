@@ -1,7 +1,5 @@
 # hadolint ignore=DL3007
-FROM ${BASE_IMAGE}
-
-LABEL authors="${AUTHOR}"
+FROM ${BASE_IMAGE_NAME}:${BASE_IMAGE_VERSION}
 
 RUN composer global require codeception/codeception:2.5.4 && \
     composer clear-cache

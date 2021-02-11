@@ -1,23 +1,16 @@
 SHELL := /bin/bash
 
-IMAGE_NAME 				:= p4-codeception
-BUILD_NAMESPACE 	?= gcr.io
-GOOGLE_PROJECT_ID ?= planet-4-151612
+# ---
 
-BUILD_IMAGE := $(BUILD_NAMESPACE)/$(GOOGLE_PROJECT_ID)/$(IMAGE_NAME)
+# Read default configuration
+include config.default
+export $(shell sed 's/=.*//' config.default)
+
+# ---
+
+# Image to build
+BUILD_IMAGE := $(BUILD_NAMESPACE)/$(IMAGE_NAME)
 export BUILD_IMAGE
-
-BASE_IMAGE_NAME 	?= greenpeaceinternational/circleci-base
-BASE_IMAGE_VERSION 	?= latest
-
-BASE_IMAGE := $(BASE_IMAGE_NAME):$(BASE_IMAGE_VERSION)
-export BASE_IMAGE
-
-MAINTAINER_NAME 	?= Raymond Walker
-MAINTAINER_EMAIL 	?= raymond.walker@greenpeace.org
-
-AUTHOR := $(MAINTAINER_NAME) <$(MAINTAINER_EMAIL)>
-export AUTHOR
 
 # ============================================================================
 
@@ -57,15 +50,12 @@ YAMLLINT := $(shell command -v yamllint 2> /dev/null)
 
 # ============================================================================
 
-all: init clean build push
+all: init prepare lint build test push
 
 init:
 	@chmod 755 .githooks/*
 	@find .git/hooks -type l -exec rm {} \;
 	@find .githooks -type f -exec ln -sf ../../{} .git/hooks/ \;
-
-clean:
-	rm -f Dockerfile
 
 lint: lint-yaml lint-docker
 
@@ -81,19 +71,15 @@ $(error "docker is not installed: https://docs.docker.com/install/")
 endif
 	@docker run --rm -i hadolint/hadolint < Dockerfile >/dev/null
 
-pull:
-	docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD}
-	docker pull $(BASE_IMAGE)
-	rm -f /home/circleci/.docker/config.json
+prepare: Dockerfile
 
 Dockerfile:
-	envsubst '$${BASE_IMAGE},$${AUTHOR}' < Dockerfile.in > $@
+	envsubst '$${BASE_IMAGE_NAME},$${BASE_IMAGE_VERSION}' < Dockerfile.in > $@
 
 build:
 ifndef DOCKER
 $(error "docker is not installed: https://docs.docker.com/install/")
 endif
-	$(MAKE) -j lint pull
 	docker build \
 		--tag=$(BUILD_IMAGE):$(BUILD_TAG) \
 		--tag=$(BUILD_IMAGE):$(BUILD_NUM) \
