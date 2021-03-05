@@ -4,7 +4,7 @@ FROM ${BASE_IMAGE_NAME}:${BASE_IMAGE_VERSION}
 RUN composer global require codeception/codeception:2.5.4 && \
     composer clear-cache
 
-COPY codeception-skeleton /home/circleci/scripts/codeception-skeleton
-COPY codeceptionify.sh /home/circleci/scripts/codeceptionify.sh
+COPY src/codeception /home/circleci/codeception
+COPY src/bin/codeceptionify.sh /usr/local/bin/codeceptionify.sh
 
 ENV PATH="/home/circleci/.composer/vendor/bin:${PATH}"

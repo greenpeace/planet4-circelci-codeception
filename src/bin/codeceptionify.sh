@@ -2,9 +2,9 @@
 #
 # This is used to turn a project that just has a tests/ directory
 # into a valid codeception project that can be run.
-# 
+#
 # The use case is for the NRO project repos to just define:
-# 
+#
 #   .
 #   └── tests
 #       └── HomePageCept.php
@@ -33,5 +33,5 @@ fi
 rsync \
 	-av \
 	--ignore-existing \
-	/home/circleci/scripts/codeception-skeleton/ \
+	/home/circleci/codeception/ \
 	"$destination"
