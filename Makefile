@@ -71,7 +71,10 @@ $(error "docker is not installed: https://docs.docker.com/install/")
 endif
 	@docker run --rm -i hadolint/hadolint < Dockerfile >/dev/null
 
-prepare: Dockerfile
+prepare: clean Dockerfile
+
+clean:
+	rm -f Dockerfile
 
 Dockerfile:
 	envsubst '$${BASE_IMAGE_NAME},$${BASE_IMAGE_VERSION}' < Dockerfile.in > $@

@@ -1,0 +1,22 @@
+{
+	"name": "greenpeace/planet4-circleci-codeception",
+	"description": "Planet 4 CI container for Codeception tests",
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://packagist.org"
+		}
+	],
+	"require": {
+		"codeception/module-asserts": "^1.2.1",
+		"codeception/module-db": "^1.0.1",
+		"codeception/module-webdriver": "^1.1.0",
+		"codeception/module-cli": "^1.0.2",
+    "codeception/c3": "^2.5.4",
+		"lucatume/wp-browser": "^2.6.1",
+		"myclabs/php-enum": "^1.7"
+	},
+	"config": {
+		"github-protocols": ["https"]
+	}
+}
