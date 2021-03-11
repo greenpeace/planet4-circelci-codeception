@@ -4,7 +4,20 @@ modules:
     enabled:
         - Asserts
         - WebDriver
+        - WPDb
+        - WPCLI
+        - \Helper\Acceptance
     config:
+        WPDb:
+            dsn: 'mysql:host=127.0.0.1;dbname=%WP_DB_NAME%'
+            user: '%WP_DB_USERNAME%'
+            password: '%WP_DB_PASSWORD%'
+            populate: false
+            cleanup: false
+            waitlock: 0
+            url: 'http://%APP_HOSTNAME%/%APP_HOSTPATH%'
+            #  replace the hardcoded dump URL with the one above
+            urlReplacement: false
         WebDriver:
             url: 'http://%APP_HOSTNAME%/%APP_HOSTPATH%'
             host: '%CODECEPTION_SELENIUM_HOST%'
