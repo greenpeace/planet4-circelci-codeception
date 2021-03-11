@@ -27,6 +27,9 @@ modules:
             wait: 2
             window_size: 1920x1080
             clear_cookies: true
+        WPCLI:
+            path: /home/circleci/project
+            throw: true
 extensions:
     enabled:
         - Codeception\Extension\Recorder
