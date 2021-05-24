@@ -4,7 +4,7 @@
 IMAGE_NAME=p4-codeception
 BUILD_NAMESPACE=greenpeaceinternational
 
-BASE_IMAGE_NAME=greenpeaceinternational/circleci-base
+BASE_IMAGE_NAME=greenpeaceinternational/p4-builder
 BASE_IMAGE_VERSION=latest
 
 BASE_IMAGE=$(BASE_IMAGE_NAME):$(BASE_IMAGE_VERSION)
