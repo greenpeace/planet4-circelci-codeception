@@ -3,21 +3,43 @@ actor: AcceptanceTester
 modules:
     enabled:
         - Asserts
-        - WebDriver
+        - WPDb
+        - WPWebDriver
+        - WPCLI
+        - \Helper\Acceptance
     config:
-        WebDriver:
-            url: 'http://%APP_HOSTNAME%/%APP_HOSTPATH%'
+        WPDb:
+            dsn: 'mysql:host=127.0.0.1;dbname=%WP_DB_NAME%'
+            user: '%WP_DB_USERNAME_DC%'
+            password: '%WP_DB_PASSWORD_DC%'
+            populate: false
+            cleanup: false
+            waitlock: 0
+            url: 'https://%APP_HOSTNAME%/%APP_HOSTPATH%'
+            urlReplacement: true
+            tablePrefix: 'wp_'
+        WPWebDriver:
+            url: 'https://%APP_HOSTNAME%/%APP_HOSTPATH%'
             host: '%CODECEPTION_SELENIUM_HOST%'
             browser: chrome
             port: '%CODECEPTION_SELENIUM_PORT%'
             restart: false
             wait: 2
             window_size: 1920x1080
+            adminUsername: 'p4_test_user'
+            adminPassword: '%WP_TEST_USER_DC%'
+            adminPath: '/wp-admin/'
             clear_cookies: true
+            capabilities:
+                chromeOptions:
+                    args: ["--unsafely-treat-insecure-origin-as-secure='https://%APP_HOSTNAME%/%APP_HOSTPATH%'"]
+        WPCLI:
+            path: /home/circleci/project
+            throw: true
 extensions:
     enabled:
         - Codeception\Extension\Recorder
     config:
         Codeception\Extension\Recorder:
             delete_successful: false
-            module: WebDriver
+            module: WPWebDriver
